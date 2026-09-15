@@ -54,7 +54,7 @@ sequenceDiagram
     F-->>U: Localized success, loading, empty, or error state
 ```
 
-For photo search, the backend compares vectors using cosine similarity, keeps results at or above `0.20`, sorts them descending, and returns at most five matches. Similarity is an investigation aid, not proof of identity.
+For photo search, the backend compares vectors using cosine similarity, keeps results at or above `0.23`, sorts them descending, and returns at most five matches. Similarity is an investigation aid, not proof of identity.
 
 ## Repository map
 
@@ -278,7 +278,7 @@ Antelope       512 values × 0.35 ├─ normalized weighted concatenation → 1
 AgeDB/Siamese  512 values × 0.25 ┘
 ```
 
-The ensemble is transparent: each model contributes a known portion of the final representation, and the backend performs final ranking. The current default similarity threshold is `0.20`, with the five strongest qualifying results returned to the interface.
+The ensemble is transparent: each model contributes a known portion of the final representation, and the backend performs final ranking. The current default similarity threshold is `0.23`, with the five strongest qualifying results returned to the interface.
 
 ### Data and privacy
 

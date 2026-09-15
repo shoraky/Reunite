@@ -192,6 +192,20 @@ html[dir="rtl"] .nav-open {
   background: #eaf6ed;
   color: #23704e;
 }
+.photo-reminder {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 14px;
+  padding: 11px 13px;
+  border: 1px solid #d6e5d9;
+  border-radius: 11px;
+  background: #f0f8f1;
+  color: #397251;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.photo-reminder svg { flex: 0 0 auto; }
 .map-location-error {
   padding: 9px 11px;
   border: 1px solid #efc6ba;

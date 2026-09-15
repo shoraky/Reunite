@@ -3,7 +3,7 @@ from __future__ import annotations
 import os, re, uuid, json, tempfile, math
 import logging
 from pathlib import Path
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date as date_type
 from typing import Any
 
 import jwt
@@ -37,6 +37,7 @@ pool = ConnectionPool(DB_URL, min_size=1, max_size=int(os.getenv("DB_POOL_MAX", 
 EMBEDDING_DIM = int(os.getenv("EMBEDDING_DIM", "1536"))
 if EMBEDDING_DIM <= 0:
     raise RuntimeError("EMBEDDING_DIM must be a positive integer.")
+PHOTO_MATCH_THRESHOLD = 0.23
 AI_SPACE = os.getenv("AI_SPACE", "")
 AI_TOKEN = os.getenv("AI_TOKEN", "")
 AI_API_NAME = os.getenv("AI_API_NAME", "/embed")
@@ -166,6 +167,17 @@ def report_coordinates(body: ReportBody) -> tuple[float | None, float | None]:
     if not -180 <= longitude <= 180 or not -90 <= latitude <= 90:
         raise HTTPException(422, "The selected location is outside valid coordinates.")
     return latitude, longitude
+
+def validate_occurrence_date(value: str | None) -> str | None:
+    if not value:
+        return value
+    try:
+        parsed = datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError as error:
+        raise HTTPException(422, "Enter a valid occurrence date.") from error
+    if parsed > date_type.today():
+        raise HTTPException(422, "The occurrence date cannot be in the future.")
+    return value
 
 def token(user: dict) -> str:
     return jwt.encode({"sub": str(user["user_id"]), "exp": datetime.now(timezone.utc) + timedelta(days=AUTH_SESSION_DAYS)}, JWT_SECRET, algorithm=JWT_ALGORITHM)
@@ -311,10 +323,10 @@ async def store_embedding(record_id: str = Form(...), image: UploadFile = File(.
         raise HTTPException(503, "AI service is unavailable.") from error
 
 @app.post("/api/embeddings/search")
-async def search_embeddings(image: UploadFile = File(...), limit: int = Form(5), threshold: float = Form(0.2)):
+async def search_embeddings(image: UploadFile = File(...), limit: int = Form(5), threshold: float = Form(PHOTO_MATCH_THRESHOLD)):
     try:
         embedding = ai_embedding(await image.read(), image.filename or "image.jpg")
-        matches = embedding_repository().search_by_embedding(embedding, limit=limit, threshold=threshold)
+        matches = embedding_repository().search_by_embedding(embedding, limit=limit, threshold=max(threshold, PHOTO_MATCH_THRESHOLD))
         return {"success": True, "data": {"matches": matches}}
     except ValueError as error:
         raise HTTPException(422, str(error)) from error
@@ -504,8 +516,9 @@ def create_report(body: ReportBody, user=Depends(current_user)):
     if body.kind not in ("Found","Missing"): raise HTTPException(422, "Invalid report kind.")
     if body.gender and body.gender not in ("Male", "Female"): raise HTTPException(422, "Gender must be Male or Female.")
     latitude, longitude = report_coordinates(body)
+    occurrence_date = validate_occurrence_date(body.occurrence_date)
     with pool.connection() as c:
-        row = c.execute('INSERT INTO report (user_id,kind,name,age,gender,occurrence_date,latitude,longitude,description,status,created_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,\'OPEN\',now()) RETURNING *', (user["user_id"],body.kind.upper(),body.name,body.age,body.gender.upper() if body.gender else None,body.occurrence_date,latitude,longitude,body.description)).fetchone()
+        row = c.execute('INSERT INTO report (user_id,kind,name,age,gender,occurrence_date,latitude,longitude,description,status,created_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,\'OPEN\',now()) RETURNING *', (user["user_id"],body.kind.upper(),body.name,body.age,body.gender.upper() if body.gender else None,occurrence_date,latitude,longitude,body.description)).fetchone()
         create_location_notifications(c, row)
     return {"success": True, "data": normalize_report(row)}
 
@@ -524,7 +537,8 @@ def update_report(report_id: int, body: ReportBody, user=Depends(current_user)):
         if not owner: raise HTTPException(404, "Report not found.")
         if str(owner["user_id"]) != str(user["user_id"]) and not user.get("role", False): raise HTTPException(403, "You cannot modify this report.")
         latitude, longitude = report_coordinates(body)
-        row = c.execute('UPDATE report SET kind=%s,name=%s,age=%s,gender=%s,occurrence_date=%s,latitude=%s,longitude=%s,description=%s WHERE report_id=%s RETURNING *', (body.kind.upper(),body.name,body.age,body.gender.upper() if body.gender else None,body.occurrence_date,latitude,longitude,body.description,report_id)).fetchone()
+        occurrence_date = validate_occurrence_date(body.occurrence_date)
+        row = c.execute('UPDATE report SET kind=%s,name=%s,age=%s,gender=%s,occurrence_date=%s,latitude=%s,longitude=%s,description=%s WHERE report_id=%s RETURNING *', (body.kind.upper(),body.name,body.age,body.gender.upper() if body.gender else None,occurrence_date,latitude,longitude,body.description,report_id)).fetchone()
     return {"success": True, "data": row}
 
 @app.post("/api/reports/{report_id}/close")
@@ -587,7 +601,7 @@ async def search_photo(file: UploadFile = File(...)):
     if file.content_type not in ("image/jpeg", "image/png", "image/webp"): raise HTTPException(422, "Only image files are allowed.")
     try:
         embedding = ai_embedding(await file.read(), file.filename or "image.jpg")
-        matches = embedding_repository().search_by_embedding(embedding, limit=5, threshold=0.2)
+        matches = embedding_repository().search_by_embedding(embedding, limit=5, threshold=PHOTO_MATCH_THRESHOLD)
     except ValueError as error:
         raise HTTPException(422, str(error)) from error
     except Exception as error:
