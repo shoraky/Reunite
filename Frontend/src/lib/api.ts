@@ -90,6 +90,17 @@ export const signup = (body: {
   });
 export const logout = () => apiRequest<{ message: string }>("/auth/logout", { method: "POST" });
 export const me = () => apiRequest<Record<string, unknown>>("/me");
+export type Notification = {
+  id: number;
+  user_id: number;
+  report_id: number;
+  type: "missing_report_nearby" | "found_report_nearby" | string;
+  is_read: boolean;
+  created_at: string;
+};
+export const notifications = () => apiRequest<Notification[]>("/notifications");
+export const markNotificationRead = (id: number) =>
+  apiRequest<Notification>(`/notifications/${id}/read`, { method: "PATCH" });
 export const myReports = () => apiRequest<Report[]>("/me/reports").then((items) => items.map(normalizeReport));
 export function locationLabel(value: string | null): string {
   if (!value) return "Location not specified";

@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS city (
   city_id BIGSERIAL PRIMARY KEY,
   governorate_id BIGINT NOT NULL REFERENCES governorate(governorate_id) ON DELETE RESTRICT,
   name TEXT NOT NULL,
+  latitude DOUBLE PRECISION,
+  longitude DOUBLE PRECISION,
+  CHECK ((latitude IS NULL AND longitude IS NULL) OR (latitude BETWEEN -90 AND 90 AND longitude BETWEEN -180 AND 180)),
   UNIQUE (governorate_id, name)
 );
 
@@ -58,7 +61,19 @@ CREATE TABLE IF NOT EXISTS comment (
   added_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS notification (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES "User"(user_id) ON DELETE CASCADE,
+  report_id BIGINT NOT NULL REFERENCES report(report_id) ON DELETE CASCADE,
+  type TEXT NOT NULL,
+  is_read BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (user_id, report_id)
+);
+
 CREATE INDEX IF NOT EXISTS report_status_created_idx ON report(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS report_user_idx ON report(user_id);
 CREATE INDEX IF NOT EXISTS photo_report_idx ON photo(report_id);
 CREATE INDEX IF NOT EXISTS comment_report_idx ON comment(report_id, added_at);
+CREATE INDEX IF NOT EXISTS idx_notification_user ON notification(user_id);
+CREATE INDEX IF NOT EXISTS notification_user_created_idx ON notification(user_id, created_at DESC);

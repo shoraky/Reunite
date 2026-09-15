@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os, re, uuid, json, tempfile
+import os, re, uuid, json, tempfile, math
 import logging
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
@@ -233,6 +233,39 @@ def normalize_report(row: dict) -> dict:
     if row.get("status") in ("RESOLVED", "CANCELLED"): row["status"] = "Closed"
     return attach_photo_urls(row) if "photos" in row else row
 
+def create_location_notifications(connection, report: dict) -> None:
+    """Notify users in registered cities within 20 km of a public report."""
+    latitude, longitude = report.get("latitude"), report.get("longitude")
+    if (
+        report.get("status") != "OPEN"
+        or latitude is None or longitude is None
+        or not math.isfinite(float(latitude)) or not math.isfinite(float(longitude))
+        or not -90 <= float(latitude) <= 90 or not -180 <= float(longitude) <= 180
+    ):
+        return
+    notification_type = "missing_report_nearby" if report["kind"] == "MISSING" else "found_report_nearby"
+    # 6371 is the mean earth radius in kilometres. The bounding-box predicates
+    # keep the trigonometric calculation index-friendly on the city table.
+    connection.execute(
+        """
+        INSERT INTO notification (user_id, report_id, type, is_read, created_at)
+        SELECT DISTINCT u.user_id, %(report_id)s, %(type)s, false, now()
+        FROM "User" u
+        JOIN city c ON c.city_id = u.city_id
+        WHERE u.user_id <> %(owner_id)s
+          AND c.latitude IS NOT NULL AND c.longitude IS NOT NULL
+          AND c.latitude BETWEEN %(latitude)s - 0.18 AND %(latitude)s + 0.18
+          AND c.longitude BETWEEN %(longitude)s - 0.25 AND %(longitude)s + 0.25
+          AND 2 * 6371 * asin(sqrt(
+                power(sin(radians(c.latitude - %(latitude)s) / 2), 2) +
+                cos(radians(%(latitude)s)) * cos(radians(c.latitude)) *
+                power(sin(radians(c.longitude - %(longitude)s) / 2), 2)
+              )) <= 20
+        ON CONFLICT (user_id, report_id) DO NOTHING
+        """,
+        {"report_id": report["report_id"], "type": notification_type, "owner_id": report["user_id"], "latitude": latitude, "longitude": longitude},
+    )
+
 @app.get("/api/health")
 def health(): return {"success": True, "data": {"status": "ok", "service": "reunite"}}
 
@@ -337,6 +370,26 @@ def reports(page: int=Query(1, ge=1), limit: int=Query(20, ge=1, le=100), kind: 
 @app.get("/api/me")
 def me(user=Depends(current_user)): return {"success": True, "data": user}
 
+@app.get("/api/notifications")
+def notifications(user=Depends(current_user)):
+    with pool.connection() as c:
+        rows = c.execute(
+            "SELECT id,user_id,report_id,type,is_read,created_at FROM notification WHERE user_id=%s ORDER BY created_at DESC LIMIT 100",
+            (user["user_id"],),
+        ).fetchall()
+    return {"success": True, "data": rows}
+
+@app.patch("/api/notifications/{notification_id}/read")
+def mark_notification_read(notification_id: int, user=Depends(current_user)):
+    with pool.connection() as c:
+        row = c.execute(
+            "UPDATE notification SET is_read=true WHERE id=%s AND user_id=%s RETURNING id,user_id,report_id,type,is_read,created_at",
+            (notification_id, user["user_id"]),
+        ).fetchone()
+    if not row:
+        raise HTTPException(404, "Notification not found.")
+    return {"success": True, "data": row}
+
 @app.patch("/api/me")
 def update_me(body: dict, user=Depends(current_user)):
     name = body.get("name"); city_id = body.get("city_id")
@@ -435,7 +488,9 @@ def create_report(body: ReportBody, user=Depends(current_user)):
     if body.kind not in ("Found","Missing"): raise HTTPException(422, "Invalid report kind.")
     if body.gender and body.gender not in ("Male", "Female"): raise HTTPException(422, "Gender must be Male or Female.")
     latitude, longitude = report_coordinates(body)
-    with pool.connection() as c: row = c.execute('INSERT INTO report (user_id,kind,name,age,gender,occurrence_date,latitude,longitude,description,status,created_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,\'OPEN\',now()) RETURNING *', (user["user_id"],body.kind.upper(),body.name,body.age,body.gender.upper() if body.gender else None,body.occurrence_date,latitude,longitude,body.description)).fetchone()
+    with pool.connection() as c:
+        row = c.execute('INSERT INTO report (user_id,kind,name,age,gender,occurrence_date,latitude,longitude,description,status,created_at) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,\'OPEN\',now()) RETURNING *', (user["user_id"],body.kind.upper(),body.name,body.age,body.gender.upper() if body.gender else None,body.occurrence_date,latitude,longitude,body.description)).fetchone()
+        create_location_notifications(c, row)
     return {"success": True, "data": normalize_report(row)}
 
 @app.post("/api/reports/{report_id}/comments")
