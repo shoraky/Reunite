@@ -227,6 +227,7 @@ html[dir="rtl"] .nav-open {
 .notification-dot { width: 28px; height: 28px; flex: 0 0 28px; display: grid; place-items: center; border-radius: 10px; background: #f6e7e1; color: var(--coral); }
 .notification-empty { padding: 26px 18px; color: var(--muted); font-size: 11px; text-align: center; }
 @media(max-width:640px){.notification-panel{position:fixed;top:76px;left:16px;right:16px;width:auto}.photo-reminder{font-size:10px}}
+@media(max-width:760px){.app-header .notification-wrap .notification-trigger{display:grid}.app-header .notification-wrap{display:block}.notification-panel{max-height:calc(100vh - 96px);overflow:auto}}
 .map-location-error {
   padding: 9px 11px;
   border: 1px solid #efc6ba;
