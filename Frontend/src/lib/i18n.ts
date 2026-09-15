@@ -176,6 +176,14 @@ const originalText = new WeakMap<Node, string>();
 const originalAttributes = new WeakMap<Element, Record<string, string | null>>();
 
 const supplementalArabicCopy: Record<string, string> = {
+  "Unknown person": "\u0634\u062e\u0635 \u063a\u064a\u0631 \u0645\u0639\u0631\u0648\u0641",
+  "Age unknown": "\u0627\u0644\u0639\u0645\u0631 \u063a\u064a\u0631 \u0645\u0639\u0631\u0648\u0641",
+  "Details unknown": "\u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644 \u063a\u064a\u0631 \u0645\u0639\u0631\u0648\u0641\u0629",
+  "years": "\u0633\u0646\u0648\u0627\u062a",
+  "Back to cases": "\u0627\u0644\u0639\u0648\u062f\u0629 \u0625\u0644\u0649 \u0627\u0644\u0628\u0644\u0627\u063a\u0627\u062a",
+  "Community notes": "\u0645\u0644\u0627\u062d\u0638\u0627\u062a \u0627\u0644\u0645\u062c\u062a\u0645\u0639",
+  "Add a helpful note": "\u0623\u0636\u0641 \u0645\u0644\u0627\u062d\u0638\u0629 \u0645\u0641\u064a\u062f\u0629",
+  "Show phone number": "\u0639\u0631\u0636 \u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641",
   "Report location": "موقع البلاغ",
   "Near": "بالقرب من",
   "Closest city ·": "أقرب مدينة ·",
