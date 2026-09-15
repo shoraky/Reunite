@@ -162,6 +162,11 @@ const originalText = new WeakMap<Node, string>();
 const originalAttributes = new WeakMap<Element, Record<string, string | null>>();
 
 const supplementalArabicCopy: Record<string, string> = {
+  "Switch to Arabic": "التبديل إلى العربية",
+  "Delete report": "حذف البلاغ",
+  "Delete report?": "حذف البلاغ؟",
+  "This report, its photos, and its community notes will be permanently removed.": "سيُحذف هذا البلاغ وصوره وملاحظات المجتمع المرتبطة به نهائيًا.",
+  "Cancel": "إلغاء",
   "Selected search": "الصورة المختارة للبحث",
   "People supporting one another": "أشخاص يدعمون بعضهم بعضًا",
   "OpenStreetMap contributors": "مساهمو OpenStreetMap",
