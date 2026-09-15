@@ -10,6 +10,8 @@ const arabicCopy: Record<string, string> = {
   "A found-person report was posted near you.": "تم نشر بلاغ عن شخص عُثر عليه بالقرب منك.",
   "Missing report nearby": "بلاغ عن شخص مفقود بالقرب منك",
   "Found report nearby": "بلاغ عن شخص عُثر عليه بالقرب منك",
+  "Update your name and registered location.": "حدّث اسمك وموقعك المسجّل.",
+  "Choose a governorate and city.": "يرجى اختيار المحافظة والمدينة.",
   "Dashboard": "\u{644}\u{648}\u{62d}\u{629} \u{627}\u{644}\u{645}\u{62a}\u{627}\u{628}\u{639}\u{629}",
   "Archive": "\u{627}\u{644}\u{623}\u{631}\u{634}\u{64a}\u{641}",
   "Search": "\u{627}\u{644}\u{628}\u{62d}\u{62b}",

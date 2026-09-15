@@ -182,7 +182,11 @@ def current_user(request: Request):
     try: uid = jwt.decode(session, JWT_SECRET, algorithms=[JWT_ALGORITHM])["sub"]
     except Exception as e: raise HTTPException(401, "Invalid or expired session.") from e
     with pool.connection() as c:
-        row = c.execute('SELECT user_id, name, phone, city_id, joined_at, role FROM "User" WHERE user_id=%s', (uid,)).fetchone()
+        row = c.execute('''SELECT u.user_id,u.name,u.phone,u.city_id,u.joined_at,u.role,
+            c.governorate_id,g.name AS governorate_name,c.name AS city_name
+            FROM "User" u LEFT JOIN city c ON c.city_id=u.city_id
+            LEFT JOIN governorate g ON g.governorate_id=c.governorate_id
+            WHERE u.user_id=%s''', (uid,)).fetchone()
     if not row: raise HTTPException(401, "User not found.")
     return row
 
@@ -392,11 +396,23 @@ def mark_notification_read(notification_id: int, user=Depends(current_user)):
 
 @app.patch("/api/me")
 def update_me(body: dict, user=Depends(current_user)):
-    name = body.get("name"); city_id = body.get("city_id")
+    name = body.get("name"); city_id = body.get("city_id"); governorate_id = body.get("governorate_id")
     if not name and city_id is None: raise HTTPException(422, "Nothing to update.")
     with pool.connection() as c:
-        row = c.execute('UPDATE "User" SET name=COALESCE(%s,name), city_id=COALESCE(%s,city_id) WHERE user_id=%s RETURNING user_id,name,phone,city_id,joined_at', (name,city_id,user["user_id"])).fetchone()
-    return {"success": True, "data": row}
+        if city_id is not None:
+            location = c.execute('SELECT governorate_id FROM city WHERE city_id=%s', (city_id,)).fetchone()
+            if not location: raise HTTPException(422, "City does not exist.")
+            if governorate_id is not None and int(location["governorate_id"]) != int(governorate_id):
+                raise HTTPException(422, "City does not belong to the selected governorate.")
+        row = c.execute('''UPDATE "User" SET name=COALESCE(%s,name), city_id=COALESCE(%s,city_id)
+            WHERE user_id=%s
+            RETURNING user_id,name,phone,city_id,joined_at,role''', (name,city_id,user["user_id"])).fetchone()
+        location = c.execute('''SELECT u.user_id,u.name,u.phone,u.city_id,u.joined_at,u.role,
+            c.governorate_id,g.name AS governorate_name,c.name AS city_name
+            FROM "User" u LEFT JOIN city c ON c.city_id=u.city_id
+            LEFT JOIN governorate g ON g.governorate_id=c.governorate_id
+            WHERE u.user_id=%s''', (user["user_id"],)).fetchone()
+    return {"success": True, "data": location or row}
 
 @app.patch("/api/me/password")
 def change_password(body: PasswordChangeBody, user=Depends(current_user)):

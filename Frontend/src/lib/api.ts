@@ -228,7 +228,7 @@ export const updateReport = (id: string, input: {
     description: input.description || null,
   }),
 }).then(normalizeReport);
-export const updateProfile = (body: { name: string }) =>
+export const updateProfile = (body: { name: string; city_id?: number; governorate_id?: number }) =>
   apiRequest<Record<string, unknown>>("/me", {
     method: "PATCH",
     body: JSON.stringify(body),
