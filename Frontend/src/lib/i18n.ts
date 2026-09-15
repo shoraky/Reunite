@@ -176,6 +176,15 @@ const originalText = new WeakMap<Node, string>();
 const originalAttributes = new WeakMap<Element, Record<string, string | null>>();
 
 const supplementalArabicCopy: Record<string, string> = {
+  "A missing-person report was posted near you.": "نُشر بلاغ عن شخص مفقود بالقرب منك.",
+  "A found-person report was posted near you.": "نُشر بلاغ عن شخص عُثر عليه بالقرب منك.",
+  "Missing report nearby": "بلاغ عن شخص مفقود بالقرب منك",
+  "Found report nearby": "بلاغ عن شخص عُثر عليه بالقرب منك",
+  "If available, add a photo to help the community identify this person.": "إذا كانت الصورة متاحة، فأضفها لمساعدة المجتمع في التعرّف على هذا الشخص.",
+  "You're all caught up": "لا توجد إشعارات جديدة.",
+  "Loading notifications...": "جارٍ تحميل الإشعارات...",
+  "No notifications yet.": "لا توجد إشعارات حتى الآن.",
+  "unread": "غير مقروءة",
   "Switch to Arabic": "التبديل إلى العربية",
   "Delete report": "حذف البلاغ",
   "Delete report?": "حذف البلاغ؟",
