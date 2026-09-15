@@ -274,7 +274,7 @@ async def store_embedding(record_id: str = Form(...), image: UploadFile = File(.
         raise HTTPException(503, "AI service is unavailable.") from error
 
 @app.post("/api/embeddings/search")
-async def search_embeddings(image: UploadFile = File(...), limit: int = Form(5), threshold: float = Form(0.38)):
+async def search_embeddings(image: UploadFile = File(...), limit: int = Form(5), threshold: float = Form(0.25)):
     try:
         embedding = ai_embedding(await image.read(), image.filename or "image.jpg")
         matches = embedding_repository().search_by_embedding(embedding, limit=limit, threshold=threshold)
@@ -516,7 +516,7 @@ async def search_photo(file: UploadFile = File(...)):
     if file.content_type not in ("image/jpeg", "image/png", "image/webp"): raise HTTPException(422, "Only image files are allowed.")
     try:
         embedding = ai_embedding(await file.read(), file.filename or "image.jpg")
-        matches = embedding_repository().search_by_embedding(embedding, limit=5, threshold=0.38)
+        matches = embedding_repository().search_by_embedding(embedding, limit=5, threshold=0.25)
     except ValueError as error:
         raise HTTPException(422, str(error)) from error
     except Exception as error:
