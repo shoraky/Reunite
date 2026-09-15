@@ -101,6 +101,13 @@ Reunite/
 - Search active cases by photograph.
 - View controlled contact details and add community notes.
 - Review personal reports and update profile/password settings.
+- Receive localized location notifications for new nearby reports through the notification bell.
+
+### Notification system
+
+When an open report is published with valid coordinates, the backend uses the Haversine distance between the report and registered city coordinates to find users within 20 km. It creates one notification per user/report pair in the PostgreSQL/Supabase `notification` table, excluding the report creator and ignoring invalid locations. The unique `(user_id, report_id)` constraint and `ON CONFLICT DO NOTHING` prevent duplicates.
+
+The frontend loads notifications through `/notifications`, shows unread items in the responsive header bell on authenticated screens, opens the related report, and marks notifications as read through `/notifications/{id}/read`. Notification text is derived from the notification type and localized in English and Arabic; no notification content is stored in the database.
 
 ### Administrators
 
@@ -199,6 +206,8 @@ Browser QA should cover English and Arabic, LTR and RTL, desktop/tablet/mobile w
 | `/reports/{id}/comments` | Read and create community notes                               |
 | `/search/photo`          | Photo-based active-case matching                              |
 | `/embeddings/*`          | Embedding generation, storage, and lower-level search         |
+| `/notifications`         | List the current user's location-based notifications          |
+| `/notifications/{id}/read` | Mark an owned notification as read                           |
 | `/admin/users`           | Administrator-only user CRUD                                  |
 | `/governorates/*`        | Registration location data                                    |
 
