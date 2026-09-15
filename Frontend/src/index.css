@@ -212,7 +212,7 @@ html[dir="rtl"] .nav-open {
 .notification-trigger { position: relative; }
 .notification-trigger.has-unread { color: var(--green); background: var(--mint); }
 .notification-count { position: absolute; top: -4px; right: -4px; min-width: 17px; height: 17px; padding: 0 4px; display: grid; place-items: center; border-radius: 999px; background: var(--coral); color: #fff; border: 2px solid var(--paper); font-size: 8px; font-weight: 800; line-height: 1; }
-.notification-panel { position: absolute; top: calc(100% + 12px); right: 0; z-index: 40; width: min(360px, calc(100vw - 32px)); overflow: hidden; background: #fffdf9; border: 1px solid var(--line); border-radius: 17px; box-shadow: 0 18px 42px rgba(28, 48, 39, .16); }
+.notification-panel { position: absolute; top: calc(100% + 12px); inset-inline-end: 0; inset-inline-start: auto; z-index: 40; width: min(360px, calc(100vw - 32px)); max-height: min(520px, calc(100vh - 104px)); overflow: auto; background: #fffdf9; border: 1px solid var(--line); border-radius: 17px; box-shadow: 0 18px 42px rgba(28, 48, 39, .16); }
 .notification-panel-heading { display: flex; align-items: center; justify-content: space-between; padding: 15px 16px 13px; border-bottom: 1px solid #edf0eb; color: var(--green); }
 .notification-panel-heading strong,.notification-panel-heading small { display: block; }
 .notification-panel-heading strong { color: var(--ink); font-size: 13px; }
@@ -222,11 +222,11 @@ html[dir="rtl"] .nav-open {
 .notification-item.is-read { opacity: .66; }
 .notification-item>span:last-child { min-width: 0; }
 .notification-item b,.notification-item small { display: block; }
-.notification-item b { font-size: 11px; line-height: 1.45; font-weight: 700; }
+.notification-item b { font-size: 11px; line-height: 1.45; font-weight: 700; overflow-wrap:anywhere; }
 .notification-item small { margin-top: 5px; color: var(--muted); font-size: 9px; }
 .notification-dot { width: 28px; height: 28px; flex: 0 0 28px; display: grid; place-items: center; border-radius: 10px; background: #f6e7e1; color: var(--coral); }
 .notification-empty { padding: 26px 18px; color: var(--muted); font-size: 11px; text-align: center; }
-@media(max-width:640px){.notification-panel{position:fixed;top:76px;left:16px;right:16px;width:auto}.photo-reminder{font-size:10px}}
+@media(max-width:640px){.notification-panel{position:fixed;top:76px;inset-inline:auto;left:16px;right:16px;width:auto}.photo-reminder{font-size:10px}}
 @media(max-width:760px){.app-header .notification-wrap .notification-trigger{display:grid}.app-header .notification-wrap{display:block}.notification-panel{max-height:calc(100vh - 96px);overflow:auto}}
 .map-location-error {
   padding: 9px 11px;
