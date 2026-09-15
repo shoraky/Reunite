@@ -10,3 +10,4 @@ Its most important responsibility is not merely returning data; it is preserving
 
 Production requires a real `JWT_SECRET`. `AI_SPACE`, `AI_TOKEN`, database variables, and Supabase service-role credentials belong only in the deployment environment; never expose them to the frontend.
 
+The current AI ensemble returns 1536-dimensional embeddings (three concatenated 512-dimensional model outputs). Set `EMBEDDING_DIM=1536` in the backend environment. Existing 512-dimensional records are intentionally ignored during similarity search; regenerate stored embeddings after deploying this change.

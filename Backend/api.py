@@ -32,7 +32,11 @@ AUTH_COOKIE_SECURE = os.getenv("AUTH_COOKIE_SECURE", "true" if os.getenv("ENVIRO
 AUTH_COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "none" if os.getenv("ENVIRONMENT", "development").lower() == "production" else "lax").lower()
 if AUTH_COOKIE_SAMESITE not in {"lax", "strict", "none"}: AUTH_COOKIE_SAMESITE = "lax"
 pool = ConnectionPool(DB_URL, min_size=1, max_size=int(os.getenv("DB_POOL_MAX", "10")), kwargs={"row_factory": dict_row}, open=False)
-EMBEDDING_DIM = 512
+# The ensemble returns one vector per model concatenated together. Keep this
+# configurable so a future model change only requires an environment update.
+EMBEDDING_DIM = int(os.getenv("EMBEDDING_DIM", "1536"))
+if EMBEDDING_DIM <= 0:
+    raise RuntimeError("EMBEDDING_DIM must be a positive integer.")
 AI_SPACE = os.getenv("AI_SPACE", "")
 AI_TOKEN = os.getenv("AI_TOKEN", "")
 AI_API_NAME = os.getenv("AI_API_NAME", "/embed")
@@ -91,9 +95,20 @@ def ai_embedding(image_bytes: bytes, filename: str = "image.jpg") -> list[float]
         result = result[0]
     if isinstance(result, dict) and "embedding" in result:
         result = result["embedding"]
+    if isinstance(result, np.ndarray):
+        result = result.reshape(-1).tolist()
     if not isinstance(result, list) or len(result) != EMBEDDING_DIM:
-        raise ValueError(f"AI service returned an invalid {EMBEDDING_DIM}-dimension embedding.")
-    return [float(value) for value in result]
+        actual_dimension = len(result) if isinstance(result, list) else "unknown"
+        raise ValueError(
+            f"AI service returned an invalid embedding dimension: expected {EMBEDDING_DIM}, got {actual_dimension}."
+        )
+    try:
+        embedding = [float(value) for value in result]
+    except (TypeError, ValueError) as error:
+        raise ValueError("AI service returned an embedding containing non-numeric values.") from error
+    if not np.isfinite(embedding).all():
+        raise ValueError("AI service returned an embedding containing invalid numeric values.")
+    return embedding
 def embedding_repository() -> PgVectorRepository:
     return PgVectorRepository(DB_URL)
 
