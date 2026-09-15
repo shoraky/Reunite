@@ -250,6 +250,10 @@ export const cities = (govId: number) =>
   apiRequest<{ id: number; gov_id: number; name: string }[]>(
     `/governorates/${govId}/cities`,
   );
+export const nearestCity = (latitude: number, longitude: number) =>
+  apiRequest<{ name: string; distance_km: number }>(
+    `/cities/nearest?latitude=${encodeURIComponent(latitude)}&longitude=${encodeURIComponent(longitude)}`,
+  );
 export type AdminUser = {
   user_id: number;
   name: string;

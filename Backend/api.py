@@ -371,6 +371,28 @@ def cities(gov_id: int):
     with pool.connection() as c: rows = c.execute('SELECT city_id AS id,governorate_id AS gov_id,name FROM city WHERE governorate_id=%s ORDER BY name', (gov_id,)).fetchall()
     return {"success": True, "data": rows}
 
+@app.get("/api/cities/nearest")
+def nearest_city(latitude: float = Query(...), longitude: float = Query(...)):
+    if not math.isfinite(latitude) or not math.isfinite(longitude) or not -90 <= latitude <= 90 or not -180 <= longitude <= 180:
+        raise HTTPException(422, "Invalid location coordinates.")
+    with pool.connection() as c:
+        row = c.execute(
+            """
+            SELECT name,
+                   2 * 6371 * asin(sqrt(
+                     power(sin(radians(city.latitude - %s) / 2), 2) +
+                     cos(radians(%s)) * cos(radians(city.latitude)) *
+                     power(sin(radians(city.longitude - %s) / 2), 2)
+                   )) AS distance_km
+            FROM city
+            WHERE city.latitude IS NOT NULL AND city.longitude IS NOT NULL
+            ORDER BY distance_km, city.city_id
+            LIMIT 1
+            """,
+            (latitude, latitude, longitude),
+        ).fetchone()
+    return {"success": True, "data": row}
+
 @app.get("/api/reports")
 def reports(page: int=Query(1, ge=1), limit: int=Query(20, ge=1, le=100), kind: str|None=None, status: str|None=None, search: str|None=None):
     where, args = [], []

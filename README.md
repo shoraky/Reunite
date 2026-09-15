@@ -9,7 +9,7 @@ The system is split into four responsibilities:
 | `Frontend/` | Public website, authenticated member workspace, Arabic localization, RTL UI          | Yes                     |
 | `Backend/`  | Authentication, authorization, reports, comments, uploads, storage, AI orchestration | Yes, through`/api`    |
 | `AI/`       | Gradio image-embedding service using a three-model ensemble                          | Service-to-service only |
-| `Database/` | PostgreSQL schema for users, reports, photos, embeddings, and comments               | No                      |
+| `Database/` | PostgreSQL/Supabase schema for locations, users, reports, photos, embeddings, comments, and notifications | No                      |
 | `Mobile/`   | Flutter mobile client and its optional Node.js mobile API workspace                  | Client/API             |
 
 ## Architecture
@@ -33,6 +33,7 @@ flowchart LR
     AI -->|three normalized 512-vectors\nweighted concatenation| API
     API --> Embed
     Embed -. cosine similarity .-> API
+    API -->|nearby report notifications| DB
 ```
 
 ### Request and matching flow
@@ -109,6 +110,7 @@ The mobile app uses the backend API and supports authentication, reports, locati
 
 - Browse and filter active missing and found reports.
 - Create reports with person details, map location, description, and photographs.
+- View each report location on a map, with the closest registered city and calculated distance.
 - Edit or close owned reports and upload additional photographs.
 - Search active cases by photograph.
 - View controlled contact details and add community notes.
@@ -144,20 +146,27 @@ Embeddings generated with the previous 512-dimensional contract are incompatible
 ```mermaid
 erDiagram
     USER ||--o{ REPORT : creates
+    USER ||--o{ NOTIFICATION : receives
+    REPORT ||--o{ NOTIFICATION : triggers
     REPORT ||--o{ PHOTO : contains
     PHOTO ||--o| EMBEDDING : has
     REPORT ||--o{ COMMENT : receives
     USER ||--o{ COMMENT : writes
     GOVERNORATE ||--o{ CITY : contains
     CITY ||--o{ USER : locates
-    USER { bigint user_id PK text phone UK text password_hash boolean role }
-    REPORT { bigint report_id PK bigint user_id FK text kind text status text name date occurrence_date }
+    USER { bigint user_id PK text phone UK text password_hash bigint city_id FK boolean role }
+    GOVERNORATE { bigint governorate_id PK text name UK }
+    CITY { bigint city_id PK bigint governorate_id FK text name double latitude double longitude }
+    REPORT { bigint report_id PK bigint user_id FK text kind text status text name date occurrence_date double latitude double longitude }
     PHOTO { bigint photo_id PK bigint report_id FK text path UK }
     EMBEDDING { bigint photo_id PK bytea vector }
     COMMENT { bigint comment_id PK bigint report_id FK bigint user_id FK text content }
+    NOTIFICATION { bigint id PK bigint user_id FK bigint report_id FK text type boolean is_read timestamp created_at }
 ```
 
-Run `Database/schema.sql` against PostgreSQL/Supabase before starting the backend. Foreign keys and cascading deletes keep report-owned photos, embeddings, and comments consistent.
+`Database/schema.sql` is the source of truth for the PostgreSQL/Supabase schema. It creates the `governorate`, `city`, `"User"`, `report`, `photo`, `embedding`, `comment`, and `notification` tables without resetting existing data. City and report coordinates are nullable but, when present, must be valid latitude/longitude pairs. The notification table uses `is_read DEFAULT false`, foreign keys to users and reports, and a unique `(user_id, report_id)` constraint to prevent duplicate delivery.
+
+Run `Database/schema.sql` against PostgreSQL/Supabase before starting the backend. Foreign keys and cascading deletes keep report-owned data and notifications consistent.
 
 ## Local development
 
@@ -220,6 +229,7 @@ Browser QA should cover English and Arabic, LTR and RTL, desktop/tablet/mobile w
 | `/embeddings/*`          | Embedding generation, storage, and lower-level search         |
 | `/notifications`         | List the current user's location-based notifications          |
 | `/notifications/{id}/read` | Mark an owned notification as read                           |
+| `/cities/nearest`        | Find the closest registered city for report coordinates       |
 | `/admin/users`           | Administrator-only user CRUD                                  |
 | `/governorates/*`        | Registration location data                                    |
 

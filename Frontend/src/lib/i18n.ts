@@ -176,6 +176,16 @@ const originalText = new WeakMap<Node, string>();
 const originalAttributes = new WeakMap<Element, Record<string, string | null>>();
 
 const supplementalArabicCopy: Record<string, string> = {
+  "Report location": "موقع البلاغ",
+  "Near": "بالقرب من",
+  "Closest city ·": "أقرب مدينة ·",
+  "Location shown on map": "الموقع موضح على الخريطة",
+  "Finding the closest city...": "جارٍ تحديد أقرب مدينة...",
+  "Location is marked on the map": "تم تحديد الموقع على الخريطة",
+  "Location not specified.": "لم يتم تحديد الموقع.",
+  "The nearest city could not be loaded.": "تعذر تحميل أقرب مدينة.",
+  "Less than 1": "أقل من 1",
+  "km away": "كم بعيدًا",
   "A missing-person report was posted near you.": "نُشر بلاغ عن شخص مفقود بالقرب منك.",
   "A found-person report was posted near you.": "نُشر بلاغ عن شخص عُثر عليه بالقرب منك.",
   "Missing report nearby": "بلاغ عن شخص مفقود بالقرب منك",
@@ -334,6 +344,8 @@ function localizedValue(value: string): string | undefined {
   const years = value.match(/^(\d+) years$/);
   if (years) return years[1] + " سنة";
   const caseId = value.match(/^CASE (.+)$/);
+  const distance = value.match(/^(.+) km away$/);
+  if (distance) return distance[1] + " \u0643\u0645 \u0628\u0639\u064a\u062f\u064b\u0627";
   if (caseId) return "الحالة " + caseId[1];
   const detailCase = value.match(/^Case (.+)$/);
   if (detailCase) return "الحالة " + detailCase[1];
