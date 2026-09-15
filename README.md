@@ -10,6 +10,7 @@ The system is split into four responsibilities:
 | `Backend/`  | Authentication, authorization, reports, comments, uploads, storage, AI orchestration | Yes, through`/api`    |
 | `AI/`       | Gradio image-embedding service using a three-model ensemble                          | Service-to-service only |
 | `Database/` | PostgreSQL schema for users, reports, photos, embeddings, and comments               | No                      |
+| `Mobile/`   | Flutter mobile client and its optional Node.js mobile API workspace                  | Client/API             |
 
 ## Architecture
 
@@ -81,8 +82,19 @@ Reunite/
 │   └── README.md                # AI service guide; maintained independently
 ├── Database/
 │   └── schema.sql               # PostgreSQL/Supabase schema
+├── Mobile/
+│   ├── Flutter/                 # Flutter Android/iOS/mobile client
+│   ├── Backend-Node/            # Optional Fastify/TypeScript mobile API
+│   ├── package.json             # Mobile workspace helper scripts
+│   └── docker-compose.yml        # Optional containerized mobile stack
 └── README.md                    # System-level guide
 ```
+
+### Mobile workspace
+
+The mobile client is a standalone Flutter project rooted at `Mobile/Flutter`; use its `pubspec.yaml` and run Flutter commands from that directory. `Mobile/Backend-Node` is a separate TypeScript/Fastify backend with its own `package.json`, tests, and Dockerfile. The workspace-level `Mobile/package.json` and `Mobile/docker-compose.yml` are orchestration helpers only; they are not required to build or run the Flutter application directly.
+
+The mobile app uses the backend API and supports authentication, reports, locations, photo search, and notifications. Keep mobile-only dependencies and source code inside `Mobile/Flutter`, and keep Node API dependencies inside `Mobile/Backend-Node`.
 
 ## Product flows
 
