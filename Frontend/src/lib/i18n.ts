@@ -435,6 +435,12 @@ arabicCopy["Payment processing is not configured yet, so no charge was made. For
 arabicCopy["How should we thank you?"] = "كيف نود أن نشكرك؟";
 arabicCopy["Phone or email"] = "رقم الهاتف أو البريد الإلكتروني";
 arabicCopy["Continue with support"] = "متابعة المساهمة";
+arabicCopy["A clearer report"] = "بلاغ أوضح";
+arabicCopy["Add a photo before you continue?"] = "هل ترغب في إضافة صورة قبل المتابعة؟";
+arabicCopy["A photo can make this report easier for families and the community to recognize. You can still publish the report without one."] = "قد تساعد الصورة العائلات والمجتمع على التعرّف إلى الشخص بسرعة أكبر. ومع ذلك، يمكنك نشر البلاغ من دون صورة.";
+arabicCopy["Go back"] = "العودة";
+arabicCopy["Add a photo"] = "إضافة صورة";
+arabicCopy["Continue without photo"] = "المتابعة من دون صورة";
 
 function localizedValue(value: string): string | undefined {
   if (arabicCopy[value]) return arabicCopy[value];
