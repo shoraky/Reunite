@@ -441,6 +441,8 @@ arabicCopy["A photo can make this report easier for families and the community t
 arabicCopy["Go back"] = "العودة";
 arabicCopy["Add a photo"] = "إضافة صورة";
 arabicCopy["Continue without photo"] = "المتابعة من دون صورة";
+arabicCopy["Browse files"] = "استعراض الملفات";
+arabicCopy["Profile placeholder"] = "صورة شخصية افتراضية";
 
 function localizedValue(value: string): string | undefined {
   if (arabicCopy[value]) return arabicCopy[value];
