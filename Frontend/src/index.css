@@ -454,6 +454,29 @@ html[dir="rtl"] .select-field-trigger,html[dir="rtl"] .select-field-menu button{
 .cases-grid,.archive-grid{align-items:stretch}
 .case-card{height:100%;display:flex;flex-direction:column;min-width:0}
 .case-photo{height:auto;aspect-ratio:4 / 3;min-height:0;max-height:235px;flex:0 0 auto}
+.report-page .page-heading{max-width:720px}
+.report-page .report-panel{max-width:860px;background:transparent;border:0;padding:0;}
+.report-page .report-form{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:0;}
+.report-page .report-choice,.report-page .location-field,.report-page .report-form>label,.report-page .existing-photos,.report-page .upload-small,.report-page .photo-reminder-inline,.report-page .upload-progress,.report-page .report-form>.inline-error,.report-page .report-form>.btn{grid-column:1/-1;}
+.report-page .report-choice{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px;background:#edf3ee;border:1px solid #dce8de;border-radius:18px;}
+.report-page .report-choice button{min-height:112px;border:1px solid transparent;border-radius:14px;background:rgba(255,255,255,.58);padding:20px;text-align:start;display:flex;align-items:flex-start;gap:13px;color:var(--ink);transition:background .2s,border-color .2s,box-shadow .2s,transform .2s;}
+.report-page .report-choice button:hover{transform:translateY(-2px);background:#fff;border-color:#c7dccb;box-shadow:0 8px 20px rgba(32,53,45,.06)}
+.report-page .report-choice button.selected{background:#fff;border-color:#71a783;box-shadow:0 8px 22px rgba(32,53,45,.08)}
+.report-page .report-choice .choice-icon{width:38px;height:38px;flex:0 0 38px;border-radius:12px;display:grid;place-items:center;background:#dcece0;color:var(--green);}
+.report-page .report-choice button.selected .choice-icon{background:var(--green);color:#fff}
+.report-page .report-choice b,.report-page .report-choice small{display:block}.report-page .report-choice b{font-size:13px;margin:1px 0 7px}.report-page .report-choice small{font-size:11px;line-height:1.55;color:var(--muted)}
+.report-page .form-grid{grid-column:1/-1;background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;grid-template-columns:repeat(2,minmax(0,1fr));box-shadow:0 8px 22px rgba(32,53,45,.035);}
+.report-page .location-field{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 22px rgba(32,53,45,.035)}
+.report-page .location-field>b,.report-page .report-form>label>textarea{display:block}
+.report-page .report-form>label:not(.upload-small){background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 8px 22px rgba(32,53,45,.035)}
+.report-page .report-form>label:not(.upload-small) textarea{min-height:145px;border-color:#d8e1d9;background:#fbfcfb;line-height:1.6}
+.report-page .existing-photos{background:#f2f6f2;border:1px solid #dce8de;border-radius:18px;padding:18px;}
+.report-page .existing-photos>div{gap:10px}.report-page .existing-photos img{width:112px;height:86px}
+.report-page .upload-small{display:flex;align-items:center;gap:13px;background:#fff;border:1.5px dashed #9bbda4;border-radius:18px;padding:18px;color:var(--green);}
+.report-page .upload-small>span{display:block}.report-page .upload-small b,.report-page .upload-small small{display:block}.report-page .upload-small b{font-size:12px}.report-page .upload-small small{margin-top:5px;color:var(--muted);font-size:10px}
+.report-page .photo-reminder-inline{margin:0;padding:14px 16px}.report-page .upload-progress{background:#eff5f0;border:1px solid #dce8de;border-radius:15px;padding:15px}
+.report-page .report-form>.btn{justify-self:end;min-width:190px;margin-top:2px}
+.report-page .location-value{display:block;margin-top:10px;color:var(--muted);font-size:10px}
 .case-photo>img,.case-photo>.photo-placeholder{display:block;width:100%;height:100%;object-fit:contain}
 .case-body{display:flex;flex:1;min-width:0;flex-direction:column}
 .case-body h3,.case-body p,.case-location{overflow-wrap:anywhere;word-break:break-word}

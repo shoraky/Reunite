@@ -391,6 +391,24 @@ const polishedArabicCopy: Record<string, string> = {
   "Page not found.": "هذه الصفحة غير موجودة.",
 };
 Object.assign(arabicCopy, supplementalArabicCopy, polishedArabicCopy);
+arabicCopy["Users"] = "المستخدمون";
+arabicCopy["Administration"] = "إدارة النظام";
+arabicCopy["Users."] = "المستخدمون.";
+arabicCopy["Users could not be loaded."] = "تعذّر تحميل قائمة المستخدمين.";
+arabicCopy["Report author"] = "صاحب البلاغ";
+arabicCopy["Age"] = "العمر";
+arabicCopy["Gender"] = "النوع";
+arabicCopy["Status"] = "الحالة";
+arabicCopy["Report location"] = "موقع البلاغ";
+arabicCopy["Location shown on map"] = "الموقع موضّح على الخريطة";
+arabicCopy["Finding the closest city..."] = "جارٍ تحديد أقرب مدينة...";
+arabicCopy["Location is marked on the map"] = "تم تحديد الموقع على الخريطة";
+arabicCopy["Edit report"] = "تعديل البلاغ";
+arabicCopy["Closing"] = "جارٍ إغلاق البلاغ";
+arabicCopy["Deleting"] = "جارٍ الحذف";
+arabicCopy["Delete report"] = "حذف البلاغ";
+arabicCopy["Delete report?"] = "حذف البلاغ؟";
+arabicCopy["Add comment"] = "إضافة تعليق";
 
 function localizedValue(value: string): string | undefined {
   if (arabicCopy[value]) return arabicCopy[value];
