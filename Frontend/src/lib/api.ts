@@ -118,6 +118,7 @@ export function normalizeReport(value: unknown): Report {
   return {
     ...raw,
     id: String(raw.id ?? raw.report_id),
+    user_id: String(raw.user_id ?? ""),
     kind: String(raw.kind).toLowerCase() === "found" ? "Found" : "Missing",
     status: ["resolved", "cancelled", "closed"].includes(String(raw.status).toLowerCase()) ? "Closed" : "Open",
     name: String(raw.name ?? "Unknown person"),

@@ -14,6 +14,7 @@ export interface City {
 
 export interface Report {
   id: string;
+  user_id: string;
   kind: ReportKind;
   name: string;
   age: number | null;

@@ -573,11 +573,14 @@ def close_report(report_id: int, user=Depends(current_user)):
     return {"success": True, "data": row}
 
 @app.delete("/api/reports/{report_id}")
-def delete_report(report_id: int, user=Depends(admin_user)):
+def delete_report(report_id: int, user=Depends(current_user)):
     with pool.connection() as c:
-        paths = c.execute('SELECT path FROM photo WHERE report_id=%s', (report_id,)).fetchall()
-        if not c.execute('SELECT 1 FROM report WHERE report_id=%s', (report_id,)).fetchone():
+        owner = c.execute('SELECT user_id FROM report WHERE report_id=%s', (report_id,)).fetchone()
+        if not owner:
             raise HTTPException(404, "Report not found.")
+        if str(owner["user_id"]) != str(user["user_id"]) and not user.get("role", False):
+            raise HTTPException(403, "You cannot delete this report.")
+        paths = c.execute('SELECT path FROM photo WHERE report_id=%s', (report_id,)).fetchall()
         c.execute('DELETE FROM comment WHERE report_id=%s', (report_id,))
         c.execute('DELETE FROM embedding WHERE photo_id IN (SELECT photo_id FROM photo WHERE report_id=%s)', (report_id,))
         c.execute('DELETE FROM photo WHERE report_id=%s', (report_id,))
