@@ -366,7 +366,6 @@ const polishedArabicCopy: Record<string, string> = {
   "Location is marked on the map": "تم تحديد الموقع على الخريطة",
   "The nearest city could not be loaded.": "تعذّر تحديد أقرب مدينة.",
   "Less than 1": "أقل من 1",
-  "Report location": "موقع البلاغ",
   "Add photos": "إضافة صور",
   "Existing photos are kept": "ستبقى الصور المرفقة محفوظة",
   "photo selected": "صورة محددة",
@@ -395,6 +394,11 @@ arabicCopy["Users"] = "المستخدمون";
 arabicCopy["Administration"] = "إدارة النظام";
 arabicCopy["Users."] = "المستخدمون.";
 arabicCopy["Users could not be loaded."] = "تعذّر تحميل قائمة المستخدمين.";
+arabicCopy["Manage accounts and administrator access. Deleting a user also removes their reports and comments."] = "أدر الحسابات وصلاحيات مسؤولي النظام. يؤدي حذف المستخدم إلى حذف بلاغاته وتعليقاته أيضًا.";
+arabicCopy["Complete the name, phone, password, governorate, and city."] = "أكمل الاسم ورقم الهاتف وكلمة المرور والمحافظة والمدينة.";
+arabicCopy["User could not be updated."] = "تعذّر تحديث بيانات المستخدم.";
+arabicCopy["User could not be created."] = "تعذّر إنشاء المستخدم.";
+arabicCopy["User could not be deleted."] = "تعذّر حذف المستخدم.";
 arabicCopy["Report author"] = "صاحب البلاغ";
 arabicCopy["Age"] = "العمر";
 arabicCopy["Gender"] = "النوع";
@@ -409,6 +413,28 @@ arabicCopy["Deleting"] = "جارٍ الحذف";
 arabicCopy["Delete report"] = "حذف البلاغ";
 arabicCopy["Delete report?"] = "حذف البلاغ؟";
 arabicCopy["Add comment"] = "إضافة تعليق";
+arabicCopy["A calm, considered place for families, neighbors, and communities to share what they know when someone is missing or found."] = "مساحة هادئة ومدروسة للعائلات والجيران والمجتمعات لمشاركة ما يعرفونه عندما يغيب شخص أو يُعثر عليه.";
+arabicCopy["Support Reunite"] = "ادعم ريونايت";
+arabicCopy["Care"] = "رعاية";
+arabicCopy["Community"] = "المجتمع";
+arabicCopy["Closest city ·"] = "أقرب مدينة ·";
+arabicCopy["Case #2019 · Aqaba"] = "الحالة #2019 · العقبة";
+arabicCopy["JPEG, PNG, or WebP up to 10MB each"] = "JPEG أو PNG أو WebP حتى 10 ميغابايت للصورة الواحدة";
+arabicCopy["Reunite exists to help people share verified information with dignity and privacy. Contributions help cover the practical work behind the service—hosting, secure storage, accessibility, and outreach—so the platform can remain available to the people who need it."] = "تساعد ريونايت الناس على مشاركة المعلومات الموثوقة بكرامة وخصوصية. وتساهم التبرعات في تغطية استضافة المنصة والتخزين الآمن وسهولة الوصول والتواصل المجتمعي، لتبقى متاحة لمن يحتاج إليها.";
+arabicCopy["sharing the right information, seeing the possibilities, and helping someone get home."] = "مشاركة المعلومات الصحيحة، ورؤية الاحتمالات، ومساعدة شخص على العودة إلى أهله.";
+arabicCopy["Locations could not be loaded."] = "تعذّر تحميل المواقع.";
+arabicCopy["Cities could not be loaded."] = "تعذّر تحميل المدن.";
+arabicCopy["This report could not be loaded for editing."] = "تعذّر تحميل هذا البلاغ لتعديله.";
+arabicCopy["Report could not be deleted."] = "تعذّر حذف البلاغ.";
+arabicCopy["Location permission was denied. Allow it for this site, then try again or select a point on the map."] = "تم رفض إذن تحديد الموقع. اسمح للموقع بالوصول إليه ثم حاول مجددًا، أو اختر نقطة على الخريطة.";
+arabicCopy["Your location could not be determined. Check device location services or select a point on the map."] = "تعذّر تحديد موقعك. تحقق من خدمات الموقع في جهازك أو اختر نقطة على الخريطة.";
+arabicCopy["Location detection took too long. Try again or select a point on the map."] = "استغرق تحديد الموقع وقتًا طويلًا. حاول مجددًا أو اختر نقطة على الخريطة.";
+arabicCopy["No active cases right now"] = "لا توجد بلاغات نشطة حاليًا";
+arabicCopy["No payment will be taken today. Payment processing is not configured yet."] = "لن يتم خصم أي مبلغ اليوم؛ إذ لم تُفعّل خدمة الدفع بعد.";
+arabicCopy["Payment processing is not configured yet, so no charge was made. For an offline contribution or partnership, please contact the team."] = "لم تُفعّل خدمة الدفع بعد، لذلك لم يتم خصم أي مبلغ. للمساهمة خارج المنصة أو للشراكة، تواصل مع الفريق.";
+arabicCopy["How should we thank you?"] = "كيف نود أن نشكرك؟";
+arabicCopy["Phone or email"] = "رقم الهاتف أو البريد الإلكتروني";
+arabicCopy["Continue with support"] = "متابعة المساهمة";
 
 function localizedValue(value: string): string | undefined {
   if (arabicCopy[value]) return arabicCopy[value];
@@ -419,6 +445,14 @@ function localizedValue(value: string): string | undefined {
   if (normalized === "location not specified") return "\u{644}\u{645} \u{64a}\u{62a}\u{645} \u{62d}\u{62f}\u{64a}\u{62f} \u{627}\u{644}\u{645}\u{648}\u{642}\u{639}";
   const unread = value.match(/^(\d+) unread$/);
   if (unread) return `${unread[1]} غير مقروءة`;
+  const reports = value.match(/^(\d+) report(s?)$/);
+  if (reports) return `${reports[1]} ${reports[1] === "1" ? "بلاغ" : "بلاغات"}`;
+  const away = value.match(/^(.+) km away$/);
+  if (away) return `${away[1]} كم بعيدًا`;
+  const edit = value.match(/^Edit (.+)$/);
+  if (edit) return `تعديل ${edit[1]}`;
+  const remove = value.match(/^Delete (.+)$/);
+  if (remove) return `حذف ${remove[1]}`;
   const years = value.match(/^(\d+) years$/);
   if (years) return years[1] + " سنة";
   const caseId = value.match(/^CASE (.+)$/);
